@@ -12,3 +12,6 @@ count.txt
 .vinxi
 todos.json
 .vscode/settings.json
+
+# Local Netlify folder
+.netlify

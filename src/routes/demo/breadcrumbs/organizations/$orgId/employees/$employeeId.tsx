@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getEmployee, updateEmployee } from '@/data/organizations'
 import { User, Pencil, Check, X, Building2, Briefcase } from 'lucide-react'
 
@@ -24,6 +24,12 @@ function EmployeeDetail() {
   const [editName, setEditName] = useState(employee.name)
   const [editSurname, setEditSurname] = useState(employee.surname)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Sync edit fields with loader data after invalidation
+  useEffect(() => {
+    setEditName(employee.name)
+    setEditSurname(employee.surname)
+  }, [employee.name, employee.surname])
 
   // Get organization name from parent route
   const matches = router.state.matches
@@ -155,20 +161,26 @@ function EmployeeDetail() {
 
       <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
         <p className="text-amber-400 text-sm">
-          <strong>Try it:</strong> Click the pencil icon to edit this employee's name.
-          After saving, notice how the breadcrumb above updates immediately! This works because:
+          <strong>Try it:</strong> Click the pencil icon to edit this employee's
+          name. After saving, notice how the breadcrumb above updates
+          immediately! This works because:
         </p>
         <ol className="mt-2 text-amber-400/80 text-sm list-decimal list-inside space-y-1">
           <li>
             The mutation calls{' '}
-            <code className="px-1 py-0.5 bg-slate-700 rounded">updateEmployee()</code>
+            <code className="px-1 py-0.5 bg-slate-700 rounded">
+              updateEmployee()
+            </code>
           </li>
           <li>
             Then it calls{' '}
-            <code className="px-1 py-0.5 bg-slate-700 rounded">router.invalidate()</code>
+            <code className="px-1 py-0.5 bg-slate-700 rounded">
+              router.invalidate()
+            </code>
           </li>
           <li>
-            This re-runs the route loader, which fetches the updated employee data
+            This re-runs the route loader, which fetches the updated employee
+            data
           </li>
           <li>
             The loader returns the new{' '}
@@ -176,7 +188,9 @@ function EmployeeDetail() {
             value
           </li>
           <li>
-            <code className="px-1 py-0.5 bg-slate-700 rounded">useMatches()</code>{' '}
+            <code className="px-1 py-0.5 bg-slate-700 rounded">
+              useMatches()
+            </code>{' '}
             in BreadcrumbNav picks up the change
           </li>
         </ol>
@@ -201,4 +215,3 @@ function EmployeeDetail() {
     </div>
   )
 }
-

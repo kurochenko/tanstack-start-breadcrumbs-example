@@ -1,32 +1,43 @@
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
+import {
+  createFileRoute,
+  Link,
+  useMatches,
+  useRouter,
+} from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { updateOrganization } from '@/data/organizations'
 import { Building2, Users, Pencil, Check, X, ArrowRight } from 'lucide-react'
 
-export const Route = createFileRoute(
-  '/demo/breadcrumbs/organizations/$orgId/',
-)({
-  component: OrganizationDetail,
-})
+export const Route = createFileRoute('/demo/breadcrumbs/organizations/$orgId/')(
+  {
+    component: OrganizationDetail,
+  },
+)
 
 function OrganizationDetail() {
   const router = useRouter()
   const { orgId } = Route.useParams()
 
   // Get organization from the parent route's loader data
-  const matches = router.state.matches
+  // Use useMatches() hook for reactivity - router.state.matches is not reactive
+  const matches = useMatches()
   const orgMatch = matches.find(
     (m) => m.routeId === '/demo/breadcrumbs/organizations/$orgId',
   )
-  const organization = orgMatch?.loaderData?.organization as {
-    id: string
-    name: string
-    description: string
-  }
+  const organization = (
+    orgMatch?.loaderData as {
+      organization?: { id: string; name: string; description: string }
+    }
+  )?.organization
 
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(organization?.name ?? '')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Sync editName with loader data after invalidation
+  useEffect(() => {
+    setEditName(organization?.name ?? '')
+  }, [organization?.name])
 
   const handleSave = async () => {
     if (!editName.trim() || editName === organization?.name) {
@@ -113,9 +124,12 @@ function OrganizationDetail() {
 
       <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
         <p className="text-amber-400 text-sm">
-          <strong>Try it:</strong> Click the pencil icon to edit the organization name.
-          After saving, the breadcrumb above will automatically update because{' '}
-          <code className="px-1 py-0.5 bg-slate-700 rounded">router.invalidate()</code>{' '}
+          <strong>Try it:</strong> Click the pencil icon to edit the
+          organization name. After saving, the breadcrumb above will
+          automatically update because{' '}
+          <code className="px-1 py-0.5 bg-slate-700 rounded">
+            router.invalidate()
+          </code>{' '}
           triggers the loaders to re-run.
         </p>
       </div>
@@ -127,7 +141,10 @@ function OrganizationDetail() {
       >
         <div className="flex items-center gap-4">
           <div className="p-3 bg-slate-700 rounded-lg group-hover:bg-cyan-500/20 transition-colors">
-            <Users className="text-gray-400 group-hover:text-cyan-400 transition-colors" size={24} />
+            <Users
+              className="text-gray-400 group-hover:text-cyan-400 transition-colors"
+              size={24}
+            />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white group-hover:text-cyan-400 transition-colors">
@@ -138,9 +155,11 @@ function OrganizationDetail() {
             </p>
           </div>
         </div>
-        <ArrowRight className="text-gray-500 group-hover:text-cyan-400 transition-colors" size={24} />
+        <ArrowRight
+          className="text-gray-500 group-hover:text-cyan-400 transition-colors"
+          size={24}
+        />
       </Link>
     </div>
   )
 }
-
