@@ -2,6 +2,8 @@
 
 A demonstration of how to implement dynamic breadcrumbs in TanStack Start that automatically update after mutations using `router.invalidate()`.
 
+🌐 **[Live Demo →](https://tanstack-start-breadcrumbs-example.netlify.app/)** | Deployed on Netlify with SSR support via Edge Functions
+
 ## Features
 
 - **Server-Side Rendering**: Organizations and employees are loaded via server functions
